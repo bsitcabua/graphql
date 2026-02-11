@@ -1,6 +1,5 @@
-// index.js
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
+import { startServerAndCreateNextHandler } from '@as-integrations/vercel';
 
 // Sample data
 let users = [
@@ -97,11 +96,8 @@ const resolvers = {
   }
 };
 
-// Start the server
+// Apollo Server
 const server = new ApolloServer({ typeDefs, resolvers });
 
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
-});
-
-console.log(`🚀  Server ready at: ${url}`);
+// Export as Vercel serverless function
+export default startServerAndCreateNextHandler(server);
