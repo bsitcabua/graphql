@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "dependencies": {
-    "@apollo/server": "^5.3.0",
-    "@as-integrations/vercel": "^1.0.2"
+    "@apollo/server": "^5.3.0"
   }
 }
