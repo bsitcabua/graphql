@@ -1,7 +1,8 @@
+// api/graphql.js
 import { ApolloServer } from '@apollo/server';
 import { startServerAndCreateNextHandler } from '@as-integrations/vercel';
 
-// Sample data
+// Sample data (move inside function scope to avoid cold start issues)
 let users = [
   { id: '1', name: 'Alice', email: 'alice@example.com' },
   { id: '2', name: 'Bob', email: 'bob@example.com' },
@@ -16,31 +17,11 @@ let comments = [
   { id: '1', text: 'Nice post!', postId: '1', authorId: '2', createdAt: new Date().toISOString() },
 ];
 
-// GraphQL Schema
+// GraphQL schema
 const typeDefs = `
-  type User {
-    id: ID!
-    name: String!
-    email: String!
-    posts: [Post!]!
-  }
-
-  type Post {
-    id: ID!
-    title: String!
-    content: String!
-    author: User!
-    comments: [Comment!]!
-    createdAt: String!
-  }
-
-  type Comment {
-    id: ID!
-    text: String!
-    author: User!
-    post: Post!
-    createdAt: String!
-  }
+  type User { id: ID! name: String! email: String! posts: [Post!]! }
+  type Post { id: ID! title: String! content: String! author: User! comments: [Comment!]! createdAt: String! }
+  type Comment { id: ID! text: String! author: User! post: Post! createdAt: String! }
 
   type Query {
     users: [User!]!
@@ -83,9 +64,7 @@ const resolvers = {
       return comment;
     },
   },
-  User: {
-    posts: (user) => posts.filter(p => p.authorId === user.id),
-  },
+  User: { posts: (user) => posts.filter(p => p.authorId === user.id) },
   Post: {
     author: (post) => users.find(u => u.id === post.authorId),
     comments: (post) => comments.filter(c => c.postId === post.id),
@@ -93,7 +72,7 @@ const resolvers = {
   Comment: {
     author: (comment) => users.find(u => u.id === comment.authorId),
     post: (comment) => posts.find(p => p.id === comment.postId),
-  }
+  },
 };
 
 // Apollo Server
